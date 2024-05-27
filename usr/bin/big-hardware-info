@@ -41,8 +41,6 @@ LIBRARY=${LIBRARY:-'/usr/share/bigbashview/bcc/shell'}
 function sh_config {
 	#Translation
 	export TEXTDOMAINDIR="/usr/share/locale"
-	export TEXTDOMAIN=biglinux-driver-manager
-	declare -g TITLE=$(gettext "Informações sobre o Hardware")
 	declare -g drivers_path='/usr/share/bigbashview/bcc/apps/drivers'
 }
 
@@ -56,12 +54,20 @@ function sh_main {
 
 	cd "$drivers_path" || exit 1
 
+	# Comandos específicos para cada ambiente
+	if [[ "$XDG_CURRENT_DESKTOP" == "GNOME" ]]; then
+    		TITLE=big-hardware-info
+	else
+    		TITLE="Informações sobre o Hardware"
+	fi
+
 	# env para definir as variáveis de ambiente apenas para a execução do comando
 	# eliminado a necessidade de um subshell e definindo as variáveis de ambiente somente para a execução do comando específico
 	env QT_QPA_PLATFORM=xcb \
 		SDL_VIDEODRIVER=x11 \
 		WINIT_UNIX_BACKEND=x11 \
 		GDK_BACKEND=x11 \
+	    GSK_RENDERER=cairo \
 		bash bigbashview -n "$TITLE" -s 1020x620 loading.sh.htm?toshow=show -i hardware-info.svg
 }
 
